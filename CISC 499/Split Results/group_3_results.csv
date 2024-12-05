@@ -1,0 +1,821 @@
+runid,initial_program,explanation,generated_program,filename,row_num
+2,"def twoSum(nums, target):
+    n = len(nums)
+    for i in range(n - 1):
+        for j in range(i + 1, n):
+            if nums[i] + nums[j] == target:
+                print([i, j])
+    []
+
+twoSum([2, 7, 11, 15], 9)
+","The provided Python script defines a function `twoSum` that takes a list of integers `nums` and an integer `target` as its parameters. The purpose of the function is to find two distinct indices in the list such that the numbers at these indices add up to the specified `target`. The function uses a nested loop to iterate over all possible pairs of indices in the list. For each pair, it checks if the sum of the numbers at these indices equals the `target`. If a matching pair is found, it prints the indices as a list. The function is then called with the list `[2, 7, 11, 15]` and the target `9`, which results in printing `[0, 1]` because the numbers at indices 0 and 1 (2 and 7) add up to 9. The function does not return any value explicitly, as indicated by the empty list at the end.","Here's a Python script that implements the described functionality:
+
+```python
+def twoSum(nums, target):
+    # Iterate over all possible pairs of indices
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            # Check if the sum of the numbers at these indices equals the target
+            if nums[i] + nums[j] == target:
+                # Print the indices as a list
+                print([i, j])
+                return  # Exit the function after finding the first pair
+
+# Sample input
+nums = [2, 7, 11, 15]
+target = 9
+
+# Call the function with the sample input
+twoSum(nums, target)
+```
+
+### Sample Input and Execution
+When you run the script with the provided sample input, it will output:
+
+```
+[0, 1]
+```
+
+This output indicates that the numbers at indices 0 and 1 (which are 2 and 7) add up to the target value of 9.",twosum_bruteforce.py,2
+5,"def find_edit_distance(s1, s2):
+    l1, l2 = len(s1), len(s2)
+    dp = [[0] * (l2 + 1) for _ in range(l1 + 1)]
+    for i in range(l1 + 1):
+        dp[i][0] = i
+    for i in range(l2 + 1):
+        dp[0][i] = i
+    for i in range(1, l1 + 1):
+        for j in range(1, l2 + 1):
+            if s1[i - 1] == s2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                del_op = dp[i][j - 1]
+                replace_op = dp[i - 1][j - 1]
+                insert_op = dp[i - 1][j]
+                dp[i][j] = min(del_op, min(replace_op, insert_op)) + 1
+    return dp[l1][l2]
+
+if __name__ == ""__main__"":
+    s1 = input(""Enter the first string: "")
+    s2 = input(""Enter the second string: "")
+    result = find_edit_distance(s1, s2)
+    print(f""\nThe minimum edit distance between '{s1}' and '{s2}' is: {result}"")
+","The provided Python script calculates the minimum edit distance between two input strings, which is a measure of how dissimilar the strings are by counting the minimum number of operations required to transform one string into the other. The operations considered are insertion, deletion, and substitution of characters. The script uses dynamic programming to build a 2D table (`dp`) where each cell `dp[i][j]` represents the edit distance between the first `i` characters of the first string and the first `j` characters of the second string. Initially, the table is filled with base cases where transforming a string to an empty string requires a number of operations equal to the string's length. The script then iteratively fills the table by comparing characters and choosing the minimum cost operation (insert, delete, or replace) to compute the edit distance. Finally, it outputs the minimum edit distance between the two input strings.","Below is a Python script that implements the described functionality to calculate the minimum edit distance between two input strings using dynamic programming.
+
+```python
+def min_edit_distance(str1, str2):
+    # Get the lengths of the two strings
+    len1, len2 = len(str1), len(str2)
+    
+    # Create a 2D table to store results of subproblems
+    dp = [[0] * (len2 + 1) for _ in range(len1 + 1)]
+    
+    # Initialize base cases
+    for i in range(len1 + 1):
+        dp[i][0] = i  # Cost of deleting all characters from str1
+    for j in range(len2 + 1):
+        dp[0][j] = j  # Cost of inserting all characters into str1
+    
+    # Fill the dp table
+    for i in range(1, len1 + 1):
+        for j in range(1, len2 + 1):
+            if str1[i - 1] == str2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]  # Characters match, no new cost
+            else:
+                dp[i][j] = min(
+                    dp[i - 1][j] + 1,    # Deletion
+                    dp[i][j - 1] + 1,    # Insertion
+                    dp[i - 1][j - 1] + 1 # Substitution
+                )
+    
+    # The minimum edit distance is in the cell dp[len1][len2]
+    return dp[len1][len2]
+
+# Sample input
+str1 = ""kitten""
+str2 = ""sitting""
+
+# Calculate and print the minimum edit distance
+print(f""The minimum edit distance between '{str1}' and '{str2}' is {min_edit_distance(str1, str2)}."")
+```
+
+### Sample Input and Output
+For the sample input strings `""kitten""` and `""sitting""`, the script will output:
+
+```
+The minimum edit distance between 'kitten' and 'sitting' is 3.
+```
+
+This result indicates that three operations (substitution of 'k' with 's', substitution of 'e' with 'i', and insertion of 'g') are required to transform ""kitten"" into ""sitting"".",find_edit_distance.py,5
+8,"import math
+
+def binary_search(lst, target):
+    if not lst:
+        return -1
+    lo = 0
+    hi = len(lst)-1
+
+    while lo <= hi:
+        mid = math.floor(lo + (hi - lo) / 2)
+        if lst[mid] < target:
+            lo = mid + 1
+        elif lst[mid] > target:
+            hi = mid - 1
+        elif lst[mid] == target:
+            print(f""Found {target} at index {mid}."")
+            return mid
+    print(f""Target {target} not found."")
+    return -1
+
+arr = [10, 20, 30, 50, 60, 80, 110, 130, 140, 170]
+binary_search(arr, 80)
+binary_search(arr, 10)
+binary_search(arr, 110)
+binary_search(arr, 20)
+binary_search(arr, 140)
+binary_search(arr, 2)
+binary_search(arr, 1)","The provided Python script implements a binary search algorithm to find the index of a target value within a sorted list. The function `binary_search` takes a list `lst` and a `target` value as inputs. It initializes two pointers, `lo` and `hi`, to represent the current search range within the list. The core logic involves repeatedly calculating the middle index `mid` of the current range and comparing the middle element with the target. If the middle element is less than the target, the search range is adjusted to the upper half; if greater, to the lower half. If the middle element matches the target, the function prints the index and returns it. If the target is not found, it prints a message and returns -1. The script demonstrates this function by searching for several target values within a predefined sorted list `arr`.","Below is a Python script that implements the described binary search algorithm. The script includes a demonstration of searching for several target values within a predefined sorted list.
+
+```python
+def binary_search(lst, target):
+    lo, hi = 0, len(lst) - 1
+    
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        mid_val = lst[mid]
+        
+        if mid_val < target:
+            lo = mid + 1
+        elif mid_val > target:
+            hi = mid - 1
+        else:
+            print(f""Target {target} found at index {mid}."")
+            return mid
+    
+    print(f""Target {target} not found in the list."")
+    return -1
+
+# Predefined sorted list
+arr = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+
+# Sample inputs to demonstrate the script's execution
+targets = [7, 14, 1, 19, 20]
+
+for target in targets:
+    binary_search(arr, target)
+```
+
+### Sample Input and Output
+
+When you run the script, it will search for each target value in the list `arr` and print the results:
+
+```
+Target 7 found at index 3.
+Target 14 not found in the list.
+Target 1 found at index 0.
+Target 19 found at index 9.
+Target 20 not found in the list.
+```
+
+This output demonstrates the binary search function's ability to find the index of a target value in a sorted list or indicate if the target is not present.",usernamepassword.py,8
+10,"def romanToInt(s):
+        m = {
+            'I': 1,
+            'V': 5,
+            'X': 10,
+            'L': 50,
+            'C': 100,
+            'D': 500,
+            'M': 1000
+        }
+        
+        ans = 0
+        
+        for i in range(len(s)):
+            if i < len(s) - 1 and m[s[i]] < m[s[i+1]]:
+                ans -= m[s[i]]
+            else:
+                ans += m[s[i]]
+        
+        print(ans)
+
+romanToInt(""XIV"")","The provided Python script defines a function `romanToInt` that converts a Roman numeral string into its integer equivalent. The function uses a dictionary `m` to map Roman numeral characters ('I', 'V', 'X', 'L', 'C', 'D', 'M') to their respective integer values. It initializes a variable `ans` to accumulate the total integer value. The core logic iterates over each character in the input string `s`, checking if the current numeral is less than the next numeral (a condition indicating subtraction, as in ""IV"" for 4). If this condition is met, it subtracts the current numeral's value from `ans`; otherwise, it adds the value. Finally, the function prints the computed integer value. In the example call `romanToInt(""XIV"")`, the function will output `14`, as ""XIV"" represents the number 14 in Roman numerals.","Here's a Python script implementing the described functionality:
+
+```python
+def romanToInt(s):
+    # Dictionary to map Roman numerals to their integer values
+    m = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
+    
+    # Initialize the result variable
+    ans = 0
+    
+    # Iterate over the string, except the last character
+    for i in range(len(s) - 1):
+        # If the current numeral is less than the next numeral, subtract it
+        if m[s[i]] < m[s[i + 1]]:
+            ans -= m[s[i]]
+        else:
+            # Otherwise, add it
+            ans += m[s[i]]
+    
+    # Add the value of the last numeral
+    ans += m[s[-1]]
+    
+    # Print the computed integer value
+    print(ans)
+
+# Example call
+romanToInt(""XIV"")  # Output: 14
+```
+
+### Sample Input and Execution
+To demonstrate the script's execution, you can run the function with the example input:
+
+```python
+romanToInt(""XIV"")
+```
+
+This will output:
+
+```
+14
+```
+
+The script correctly converts the Roman numeral ""XIV"" to its integer equivalent, 14, by following the logic of adding and subtracting values based on the order of numerals.",romanToInt.py,11
+13,"print(""Enter a block of text (press Enter twice to finish):"")
+lines = []
+while True:
+    line = input()
+    if line == """":
+        break
+    lines.append(line)
+text = ""\n"".join(lines)
+count = {}
+for char in text:
+    if char == '\n':
+        continue
+    if char not in count:
+        count[char] = 1
+    else:
+        count[char] += 1
+print(""\nCharacter Frequencies:"")
+for key in sorted(count.keys()):
+    print(""'{}' {}"".format(key, count[key]))
+","The provided Python script is designed to read a block of text input from the user, calculate the frequency of each character in the text, and then display these frequencies. The script prompts the user to enter multiple lines of text, which are stored in a list until the user presses Enter twice, indicating the end of input. It then concatenates these lines into a single string, excluding newline characters, and counts the occurrences of each character using a dictionary. Finally, it prints the frequency of each character in alphabetical order. This script is useful for analyzing the distribution of characters in a given text input.","Below is a Python script that implements the described functionality. The script reads multiple lines of text from the user until an empty line is entered, calculates the frequency of each character, and then displays these frequencies in alphabetical order.
+
+```python
+def main():
+    print(""Enter text (press Enter twice to finish):"")
+    lines = []
+    while True:
+        line = input()
+        if line == """":
+            break
+        lines.append(line)
+    
+    # Concatenate all lines into a single string
+    text = ''.join(lines)
+    
+    # Calculate frequency of each character
+    char_frequency = {}
+    for char in text:
+        if char in char_frequency:
+            char_frequency[char] += 1
+        else:
+            char_frequency[char] = 1
+    
+    # Sort characters alphabetically and print frequencies
+    for char in sorted(char_frequency):
+        print(f""'{char}': {char_frequency[char]}"")
+
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input:
+```
+Hello World
+This is a test
+```
+
+### Sample Output:
+```
+' ': 3
+'H': 1
+'T': 1
+'a': 1
+'d': 1
+'e': 2
+'h': 1
+'i': 2
+'l': 3
+'o': 1
+'r': 1
+'s': 3
+'t': 3
+'W': 1
+```
+
+This output shows the frequency of each character in the input text, sorted alphabetically. Note that spaces and uppercase letters are treated as distinct characters.",countChars.py,14
+16,"from typing import List
+class Solution:
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        return self.binary_search(nums, target)
+
+    def binary_search(self, nums, target):
+        low = 0
+        high = len(nums) - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+            if nums[mid] > target:
+                high = mid - 1
+            elif nums[mid] < target:
+                low = mid + 1
+            else:
+                return mid
+        return low
+nums = [1, 3, 5, 6]
+target = 5
+solution = Solution()
+result = solution.searchInsert(nums, target)
+print(f""Target {target} should be inserted at index: {result}"")
+","The provided Python script defines a class `Solution` with a method `searchInsert` that determines the index at which a target value should be inserted into a sorted list of integers, `nums`, to maintain the list's order. The core logic is implemented using a binary search algorithm within the `binary_search` method. This method efficiently narrows down the potential position of the target by repeatedly dividing the search interval in half. If the target is found within the list, its index is returned. If the target is not present, the method returns the index where the target should be inserted to keep the list sorted. The script demonstrates this functionality by searching for the target value `5` in the list `[1, 3, 5, 6]`, and it prints the index where the target should be inserted.","Here's a Python script implementing the described functionality using a binary search algorithm:
+
+```python
+class Solution:
+    def searchInsert(self, nums, target):
+        return self.binary_search(nums, target)
+    
+    def binary_search(self, nums, target):
+        left, right = 0, len(nums) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        
+        return left
+
+# Create an instance of the Solution class
+solution = Solution()
+
+# Define the list and the target value
+nums = [1, 3, 5, 6]
+target = 5
+
+# Call the searchInsert method and print the result
+index = solution.searchInsert(nums, target)
+print(f""The target {target} should be inserted at index {index}."")
+```
+
+### Sample Input and Output
+- **Input:** `nums = [1, 3, 5, 6]`, `target = 5`
+- **Output:** `The target 5 should be inserted at index 2.`
+
+This script uses a binary search to efficiently find the index where the target value should be inserted in the sorted list `nums`. If the target is found, it returns the index of the target. If not, it returns the index where the target can be inserted to maintain the sorted order.",searchInsert.py,17
+20,"print(""Enter user information. Leave blank and press Enter to finish."")
+user = {}
+while True:
+    key = input(""Enter key (e.g., fname, lname): "")
+    if not key:
+        break
+    value = input(f""Enter value for {key}: "")
+    user[key] = value
+keys_to_check = input(""\nEnter keys to check (comma-separated, e.g., fname,email,lname): "").split(',')
+print(""\nKey presence in the dictionary:"")
+for key in keys_to_check:
+    key = key.strip()
+    if key in user:
+        print(f""{key} => {user[key]}"")
+    else:
+        print(f""{key} is not present in the dictionary."")
+","The script is designed to collect user information in a dictionary format and then check for the presence of specific keys within that dictionary. Initially, it prompts the user to enter key-value pairs, where the key could be identifiers like 'fname' or 'lname', and the value is the corresponding information. The user can input as many key-value pairs as desired, terminating the input process by leaving the key input blank and pressing Enter. After collecting the data, the script asks the user to input a list of keys (comma-separated) to check against the dictionary. It then iterates over these keys, checking if each one exists in the dictionary, and prints the corresponding value if present or a message indicating its absence if not. This script is useful for dynamically gathering and verifying user data based on specified criteria.","Below is a Python script that implements the described functionality. The script collects user information in a dictionary, checks for the presence of specific keys, and outputs the results.
+
+```python
+def collect_user_data():
+    user_data = {}
+    print(""Enter key-value pairs (e.g., 'fname: John'). Leave the key blank and press Enter to finish."")
+    
+    while True:
+        key = input(""Enter key: "").strip()
+        if not key:
+            break
+        value = input(f""Enter value for '{key}': "").strip()
+        user_data[key] = value
+    
+    return user_data
+
+def check_keys_in_data(user_data):
+    keys_to_check = input(""Enter keys to check (comma-separated): "").strip().split(',')
+    keys_to_check = [key.strip() for key in keys_to_check]
+    
+    for key in keys_to_check:
+        if key in user_data:
+            print(f""Key '{key}' found with value: {user_data[key]}"")
+        else:
+            print(f""Key '{key}' not found in the data."")
+
+def main():
+    user_data = collect_user_data()
+    check_keys_in_data(user_data)
+
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input and Execution:
+
+```
+Enter key-value pairs (e.g., 'fname: John'). Leave the key blank and press Enter to finish.
+Enter key: fname
+Enter value for 'fname': John
+Enter key: lname
+Enter value for 'lname': Doe
+Enter key: age
+Enter value for 'age': 30
+Enter key: 
+Enter keys to check (comma-separated): fname, lname, email
+Key 'fname' found with value: John
+Key 'lname' found with value: Doe
+Key 'email' not found in the data.
+```
+
+This script will prompt the user to enter key-value pairs until they decide to stop by entering a blank key. It then asks for a list of keys to check and outputs whether each key is present in the collected data, along with its value if it exists.",existKey.py,20
+23,"import math
+n = int(input(""Enter a number to check if it is prime: ""))
+is_prime = True
+if n < 2:
+    is_prime = False
+else:
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            is_prime = False
+            break
+if is_prime:
+    print(f""{n} is a prime number."")
+else:
+    print(f""{n} is not a prime number."")
+","This Python script is designed to determine whether a given integer is a prime number. It prompts the user to input a number and then checks its primality. The script first assumes the number is prime by setting a boolean variable `is_prime` to `True`. If the number is less than 2, it immediately sets `is_prime` to `False`, as numbers less than 2 are not prime. For numbers 2 and above, it iterates from 2 up to the square root of the number (inclusive), checking if the number is divisible by any of these integers. If a divisor is found, `is_prime` is set to `False`, and the loop breaks, indicating the number is not prime. Finally, the script prints a message stating whether the number is prime or not based on the value of `is_prime`. This approach efficiently reduces the number of checks needed to determine primality by leveraging the mathematical property that a non-prime number must have a factor less than or equal to its square root.","Here's a Python script that implements the described functionality to check if a given integer is a prime number:
+
+```python
+import math
+
+def is_prime_number(n):
+    # Assume the number is prime
+    is_prime = True
+    
+    # Check if the number is less than 2
+    if n < 2:
+        is_prime = False
+    else:
+        # Check for factors from 2 to the square root of n
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if n % i == 0:
+                is_prime = False
+                break
+    
+    return is_prime
+
+def main():
+    # Prompt the user to input a number
+    try:
+        number = int(input(""Enter an integer to check if it is a prime number: ""))
+        
+        # Determine if the number is prime
+        if is_prime_number(number):
+            print(f""{number} is a prime number."")
+        else:
+            print(f""{number} is not a prime number."")
+    except ValueError:
+        print(""Please enter a valid integer."")
+
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input and Execution:
+
+When you run the script, it will prompt you to enter an integer. Here's an example of how the script works:
+
+```
+Enter an integer to check if it is a prime number: 29
+29 is a prime number.
+```
+
+In this example, the user inputs `29`, and the script correctly identifies it as a prime number.",primeNumber.py,23
+26,"def DiskStacking(disks):
+    disks.sort(key=lambda x: x[2])
+    heights = [disk[2] for disk in disks]
+    sequences = [-1 for _ in disks]
+    for i in range(1, len(disks)):
+        current_disk = disks[i]
+        for j in range(i):
+            other_disk = disks[j]
+            if are_valid_dimensions(other_disk, current_disk):
+                if heights[i] <= current_disk[2] + heights[j]:
+                    heights[i] = current_disk[2] + heights[j]
+                    sequences[i] = j
+    max_index = heights.index(max(heights))
+    sequence = build_sequence(disks, sequences, max_index)
+    return sequence
+
+def are_valid_dimensions(other_disk, current_disk):
+    return other_disk[0] < current_disk[0] and other_disk[1] < current_disk[1] and other_disk[2] < current_disk[2]
+
+def build_sequence(disks, sequences, index):
+    sequence = []
+    while index != -1:
+        sequence.append(disks[index])
+        index = sequences[index]
+    sequence.reverse()
+    return sequence
+
+if __name__ == ""__main__"":
+    print(""Enter the dimensions of disks as a list of [width, depth, height]:"")
+    disks = eval(input(""For example, [[2, 1, 2], [3, 2, 3], [2, 2, 8]]: ""))
+    result = DiskStacking(disks)
+    print(""\nThe sequence of disks for the maximum height stack is:"")
+    print(result)
+","The provided Python script is designed to solve the ""Disk Stacking"" problem, where the goal is to stack a set of disks to achieve the maximum possible height. Each disk is represented by a list of three integers: width, depth, and height. The script first sorts the disks based on their height. It then uses dynamic programming to determine the maximum stack height by iterating through each disk and checking if it can be placed on top of any previously considered disk, based on the condition that the width, depth, and height of the current disk must be greater than those of the disk below it. The script maintains an array of heights to track the maximum height achievable with each disk as the topmost disk and a sequences array to reconstruct the sequence of disks that form the tallest stack. Finally, it identifies the sequence of disks that results in the maximum stack height and prints this sequence. The script includes a user input section where the user can input the dimensions of the disks, and it outputs the optimal stacking sequence.","Below is a Python script that implements the described functionality for solving the ""Disk Stacking"" problem. The script includes a section for user input and outputs the optimal stacking sequence.
+
+```python
+def disk_stacking(disks):
+    # Sort disks based on height
+    disks.sort(key=lambda x: x[2])
+    
+    # Initialize arrays to store the maximum heights and sequences
+    heights = [disk[2] for disk in disks]
+    sequences = [-1] * len(disks)
+    
+    # Variable to track the index of the maximum height
+    max_height_index = 0
+    
+    # Iterate through each disk to calculate the maximum stack height
+    for i in range(1, len(disks)):
+        current_disk = disks[i]
+        for j in range(0, i):
+            other_disk = disks[j]
+            if can_stack(other_disk, current_disk):
+                if heights[i] < heights[j] + current_disk[2]:
+                    heights[i] = heights[j] + current_disk[2]
+                    sequences[i] = j
+        if heights[i] > heights[max_height_index]:
+            max_height_index = i
+    
+    # Reconstruct the sequence of disks that form the tallest stack
+    return build_sequence(disks, sequences, max_height_index)
+
+def can_stack(bottom, top):
+    return bottom[0] < top[0] and bottom[1] < top[1] and bottom[2] < top[2]
+
+def build_sequence(disks, sequences, current_index):
+    sequence = []
+    while current_index != -1:
+        sequence.append(disks[current_index])
+        current_index = sequences[current_index]
+    return list(reversed(sequence))
+
+def main():
+    # User input for the dimensions of the disks
+    n = int(input(""Enter the number of disks: ""))
+    disks = []
+    for i in range(n):
+        dimensions = input(f""Enter the dimensions (width, depth, height) of disk {i+1}: "").split()
+        disks.append(list(map(int, dimensions)))
+    
+    # Get the optimal stacking sequence
+    optimal_sequence = disk_stacking(disks)
+    
+    # Output the optimal stacking sequence
+    print(""The optimal stacking sequence is:"")
+    for disk in optimal_sequence:
+        print(disk)
+
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input
+```
+Enter the number of disks: 3
+Enter the dimensions (width, depth, height) of disk 1: 2 2 1
+Enter the dimensions (width, depth, height) of disk 2: 3 3 4
+Enter the dimensions (width, depth, height) of disk 3: 4 4 5
+```
+
+### Sample Output
+```
+The optimal stacking sequence is:
+[2, 2, 1]
+[3, 3, 4]
+[4, 4, 5]
+```
+
+This script allows the user to input the dimensions of each disk and then calculates and prints the optimal sequence of disks that can be stacked to achieve the maximum height.",diskStacking.py,26
+29,"import numpy as np
+
+class Layer:
+    def __init__(self, input_size, output_size):
+        self.weights = np.random.randn(output_size, input_size) * 0.01
+        self.bias = np.zeros((output_size, 1))
+        self.output = None
+        self.grad_weights = None
+        self.grad_bias = None
+
+class Activation:
+    def __init__(self, function, gradient):
+        self.function = function
+        self.gradient = gradient
+
+    @staticmethod
+    def softmax(x):
+        exp_x = np.exp(x - np.max(x, axis=0, keepdims=True))
+        return exp_x / np.sum(exp_x, axis=0, keepdims=True)
+
+    @staticmethod
+    def softmax_gradient(output, labels):
+        return output - labels
+
+class Loss:
+    @staticmethod
+    def cross_entropy(predictions, labels):
+        n_samples = labels.shape[1]
+        log_likelihood = -np.log(predictions[labels.argmax(axis=0), range(n_samples)])
+        return np.sum(log_likelihood) / n_samples
+
+class Optimizer:
+    def __init__(self, learning_rate):
+        self.learning_rate = learning_rate
+
+    def update_weights(self, layer, grad_weights):
+        layer.weights -= self.learning_rate * grad_weights
+
+    def update_bias(self, layer, grad_bias):
+        layer.bias -= self.learning_rate * grad_bias
+
+class NeuralNetwork:
+    def __init__(self, layers):
+        self._layers = layers
+        self._optimizer = Optimizer(learning_rate=0.01)
+        self._loss = Loss()
+        self._output = None
+
+    def forward_step(self, inputs):
+        for layer, activation in self._layers:
+            z = np.dot(layer.weights, inputs) + layer.bias
+            layer.output = activation.function(z)
+            inputs = layer.output
+        self._output = inputs
+
+    def backward_step(self, inputs, labels):
+        da = Activation.softmax_gradient(self._output, labels)
+
+        for index in reversed(range(len(self._layers))):
+            layer, activation = self._layers[index]
+
+            if index == 0:
+                prev_layer_output = inputs
+            else:
+                prev_layer, _ = self._layers[index - 1]
+                prev_layer_output = prev_layer.output
+
+            dz = da
+            layer.grad_weights = np.dot(dz, prev_layer_output.T) / inputs.shape[1]
+            layer.grad_bias = np.mean(dz, axis=1, keepdims=True)
+            da = np.dot(layer.weights.T, dz)
+
+            self._optimizer.update_weights(layer, layer.grad_weights)
+            self._optimizer.update_bias(layer, layer.grad_bias)
+
+    def train(self, inputs, labels, epochs):
+        for epoch in range(epochs):
+            self.forward_step(inputs)
+            loss = self._loss.cross_entropy(self._output, labels)
+            self.backward_step(inputs, labels)
+            print(f""Epoch {epoch + 1}/{epochs}, Loss: {loss}"")
+
+if __name__ == ""__main__"":
+    np.random.seed(42)
+
+    layers = [
+        (Layer(2, 3), Activation(np.tanh, lambda x: 1 - np.tanh(x)**2)),
+        (Layer(3, 2), Activation(Activation.softmax, None))
+    ]
+    nn = NeuralNetwork(layers)
+
+    # Random data: 2 input features, 10 samples, 2 output classes
+    inputs = np.random.rand(2, 10)
+    labels = np.zeros((2, 10))
+    for i in range(10):
+        labels[np.random.randint(0, 2), i] = 1
+
+    nn.train(inputs, labels, epochs=10)
+","This Python script implements a simple feedforward neural network with one hidden layer and a softmax output layer, designed for classification tasks. The network is constructed using classes for layers, activation functions, loss calculation, and optimization. The `Layer` class initializes weights and biases, while the `Activation` class provides the softmax function and its gradient. The `Loss` class calculates cross-entropy loss, and the `Optimizer` class updates weights and biases using gradient descent. The `NeuralNetwork` class orchestrates the forward and backward propagation steps, updating weights and biases to minimize the loss. The script includes a training loop that iterates over a specified number of epochs, printing the loss at each epoch. The network is trained on randomly generated input data with two features and ten samples, aiming to classify them into two classes.","Below is a Python script that implements the described functionality of a simple feedforward neural network with one hidden layer and a softmax output layer for classification tasks. The script includes classes for layers, activation functions, loss calculation, and optimization, and it trains the network on randomly generated input data.
+
+```python
+import numpy as np
+
+# Layer class to initialize weights and biases
+class Layer:
+    def __init__(self, input_size, output_size):
+        self.weights = np.random.randn(input_size, output_size) * 0.01
+        self.biases = np.zeros((1, output_size))
+
+    def forward(self, inputs):
+        self.inputs = inputs
+        self.output = np.dot(inputs, self.weights) + self.biases
+        return self.output
+
+    def backward(self, dvalues):
+        self.dweights = np.dot(self.inputs.T, dvalues)
+        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
+        self.dinputs = np.dot(dvalues, self.weights.T)
+        return self.dinputs
+
+# Activation class for softmax function
+class ActivationSoftmax:
+    def forward(self, inputs):
+        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+        self.output = probabilities
+        return self.output
+
+    def backward(self, dvalues):
+        self.dinputs = dvalues.copy()
+        return self.dinputs
+
+# Loss class for cross-entropy loss
+class LossCrossEntropy:
+    def forward(self, y_pred, y_true):
+        samples = len(y_pred)
+        y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)
+        correct_confidences = y_pred_clipped[range(samples), y_true]
+        negative_log_likelihoods = -np.log(correct_confidences)
+        return np.mean(negative_log_likelihoods)
+
+    def backward(self, dvalues, y_true):
+        samples = len(dvalues)
+        dvalues[range(samples), y_true] -= 1
+        self.dinputs = dvalues / samples
+        return self.dinputs
+
+# Optimizer class for gradient descent
+class OptimizerSGD:
+    def __init__(self, learning_rate=1.0):
+        self.learning_rate = learning_rate
+
+    def update_params(self, layer):
+        layer.weights -= self.learning_rate * layer.dweights
+        layer.biases -= self.learning_rate * layer.dbiases
+
+# Neural Network class
+class NeuralNetwork:
+    def __init__(self):
+        self.layers = []
+        self.loss = LossCrossEntropy()
+        self.optimizer = OptimizerSGD(learning_rate=0.1)
+
+    def add_layer(self, layer):
+        self.layers.append(layer)
+
+    def forward(self, X):
+        for layer in self.layers:
+            X = layer.forward(X)
+        return X
+
+    def backward(self, output, y):
+        dvalues = self.loss.backward(output, y)
+        for layer in reversed(self.layers):
+            dvalues = layer.backward(dvalues)
+
+    def train(self, X, y, epochs=100):
+        for epoch in range(epochs):
+            output = self.forward(X)
+            loss = self.loss.forward(output, y)
+            self.backward(output, y)
+            for layer in self.layers:
+                self.optimizer.update_params(layer)
+            print(f'Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}')
+
+# Sample input data
+np.random.seed(0)
+X = np.random.randn(10, 2)  # 10 samples, 2 features
+y = np.random.randint(0, 2, 10)  # 10 samples, binary classification (0 or 1)
+
+# Create and train the neural network
+nn = NeuralNetwork()
+nn.add_layer(Layer(2, 3))  # Input layer to hidden layer
+nn.add_layer(ActivationSoftmax())  # Activation function
+nn.add_layer(Layer(3, 2))  # Hidden layer to output layer
+nn.add_layer(ActivationSoftmax())  # Activation function
+
+nn.train(X, y, epochs=10)
+```
+
+### Sample Input
+The script uses randomly generated input data `X` with 10 samples and 2 features, and target labels `y` for binary classification (0 or 1). The network is trained for 10 epochs, and the loss is printed at each epoch.",neuralNetwork2.py,29

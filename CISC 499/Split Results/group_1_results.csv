@@ -1,0 +1,613 @@
+runid,initial_program,explanation,generated_program,filename,row_num
+3,"def longestCommonPrefix(strs):
+    if not strs:
+        return """"
+    
+    ans = """"
+    strs = sorted(strs)
+    first = strs[0]
+    last = strs[-1]
+    
+    for i in range(min(len(first), len(last))):
+        if first[i] != last[i]:
+            return ans
+        ans += first[i]
+    
+    return ans
+
+strs = [""flower"", ""flow"", ""flight""]
+result = longestCommonPrefix(strs)
+print(""Longest Common Prefix:"", result)","The provided Python script defines a function `longestCommonPrefix` that determines the longest common prefix among a list of strings. The function first checks if the input list `strs` is empty, returning an empty string if true. It then sorts the list of strings, which helps in easily identifying the common prefix by comparing only the first and last strings in the sorted order. The function iterates through the characters of these two strings up to the length of the shorter one, appending characters to the result `ans` as long as they match. If a mismatch is found, the function returns the accumulated prefix. Finally, the script demonstrates the function by finding the longest common prefix of the list `[""flower"", ""flow"", ""flight""]`, printing the result ""Longest Common Prefix: fl"". The core logic relies on sorting to minimize comparisons and efficiently find the common prefix.","Below is the Python script implementing the described functionality of finding the longest common prefix among a list of strings. The script includes a demonstration with a sample input.
+
+```python
+def longestCommonPrefix(strs):
+    if not strs:
+        return """"
+    
+    # Sort the list of strings
+    strs.sort()
+    
+    # Take the first and last string in the sorted list
+    first = strs[0]
+    last = strs[-1]
+    
+    # Initialize the result as an empty string
+    ans = """"
+    
+    # Compare characters of the first and last string
+    for i in range(min(len(first), len(last))):
+        if first[i] == last[i]:
+            ans += first[i]
+        else:
+            break
+    
+    return ans
+
+# Sample input
+strings = [""flower"", ""flow"", ""flight""]
+
+# Find the longest common prefix
+result = longestCommonPrefix(strings)
+
+# Print the result
+print(""Longest Common Prefix:"", result)
+```
+
+### Sample Input and Output
+- **Input:** `[""flower"", ""flow"", ""flight""]`
+- **Output:** `Longest Common Prefix: fl`
+
+This script sorts the list of strings and compares only the first and last strings in the sorted list to efficiently determine the longest common prefix.",longestCommonPrefix.py,3
+6,"dna = input(""Enter a DNA sequence: "")
+sequences = dna.split('X')
+sequences.sort(key=len, reverse=True)
+new_seq = []
+for w in sequences:
+    if len(w) > 0:
+        new_seq.append(w)
+
+print(""\nSorted sequences (including empty segments):"")
+print(sequences)
+
+print(""\nNon-empty sorted sequences:"")
+print(new_seq)
+","This Python script processes a DNA sequence input by the user, splitting it into segments wherever the character 'X' appears. It then sorts these segments by length in descending order. The script outputs two lists: the first includes all segments (including any empty ones resulting from consecutive 'X's), and the second includes only the non-empty segments. The core logic involves using the `split` method to divide the input string, the `sort` method to order the segments by length, and a loop to filter out empty segments for the second list. The purpose of the script is to organize and display DNA segments based on their length, excluding any empty segments in the final output.","Below is a Python script that implements the described functionality. The script takes a DNA sequence as input, splits it into segments at each occurrence of the character 'X', sorts these segments by length in descending order, and outputs two lists: one with all segments and another with only non-empty segments.
+
+```python
+def process_dna_sequence(dna_sequence):
+    # Split the DNA sequence at each 'X'
+    segments = dna_sequence.split('X')
+    
+    # Sort segments by length in descending order
+    segments.sort(key=len, reverse=True)
+    
+    # Create a list of non-empty segments
+    non_empty_segments = [segment for segment in segments if segment]
+    
+    # Output the results
+    print(""All segments (including empty ones):"", segments)
+    print(""Non-empty segments:"", non_empty_segments)
+
+# Sample input
+dna_sequence = ""ATGXXCGTAXXGCTAGXGATC""
+
+# Process the sample input
+process_dna_sequence(dna_sequence)
+```
+
+### Sample Input
+```
+ATGXXCGTAXXGCTAGXGATC
+```
+
+### Expected Output
+```
+All segments (including empty ones): ['GCTAG', 'GATC', 'ATG', '', 'CGTA', '', '']
+Non-empty segments: ['GCTAG', 'GATC', 'ATG', 'CGTA']
+```
+
+This script will take the input DNA sequence, split it at each 'X', sort the resulting segments by length, and then filter out any empty segments for the second list. The output will show both the complete list of segments and the filtered list of non-empty segments.",DNAsequence.py,6
+17,"class ListNode(object):
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+    def mergeTwoLists(self, l1, l2):
+        if not l1 or not l2:
+            return l1 or l2
+        if l1.val < l2.val:
+            l1.next = self.mergeTwoLists(l1.next, l2)
+            return l1
+        else:
+            l2.next = self.mergeTwoLists(l1, l2.next)
+            return l2
+
+def create_linked_list(values):
+    if not values:
+        return None
+    head = ListNode(values[0])
+    current = head
+    for val in values[1:]:
+        current.next = ListNode(val)
+        current = current.next
+    return head
+
+def print_linked_list(head):
+    result = []
+    while head:
+        result.append(head.val)
+        head = head.next
+    print("" -> "".join(map(str, result)))
+
+l1 = create_linked_list([1, 2, 4])
+l2 = create_linked_list([1, 3, 4])
+
+node = ListNode()
+merged_list = node.mergeTwoLists(l1, l2)
+
+print(""Merged Linked List:"")
+print_linked_list(merged_list)
+","The provided Python script defines a `ListNode` class to represent nodes in a singly linked list and includes methods to merge two sorted linked lists into a single sorted linked list. The `mergeTwoLists` method recursively compares the head nodes of two lists, `l1` and `l2`, and links the smaller node to the result list, continuing this process until all nodes are merged. The script also includes utility functions: `create_linked_list`, which constructs a linked list from a list of values, and `print_linked_list`, which prints the linked list in a readable format. The script demonstrates its functionality by creating two linked lists, merging them using the `mergeTwoLists` method, and printing the merged list. The core logic revolves around recursively merging nodes based on their values to maintain sorted order.","Below is a Python script that implements the described functionality of merging two sorted linked lists using a recursive approach. The script includes the `ListNode` class, the `mergeTwoLists` method, and utility functions to create and print linked lists.
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def mergeTwoLists(l1, l2):
+    if not l1:
+        return l2
+    if not l2:
+        return l1
+    
+    if l1.val < l2.val:
+        l1.next = mergeTwoLists(l1.next, l2)
+        return l1
+    else:
+        l2.next = mergeTwoLists(l1, l2.next)
+        return l2
+
+def create_linked_list(values):
+    if not values:
+        return None
+    head = ListNode(values[0])
+    current = head
+    for value in values[1:]:
+        current.next = ListNode(value)
+        current = current.next
+    return head
+
+def print_linked_list(node):
+    values = []
+    while node:
+        values.append(str(node.val))
+        node = node.next
+    print("" -> "".join(values))
+
+# Sample input
+list1_values = [1, 2, 4]
+list2_values = [1, 3, 4]
+
+# Create linked lists from the sample input
+l1 = create_linked_list(list1_values)
+l2 = create_linked_list(list2_values)
+
+# Merge the two linked lists
+merged_list = mergeTwoLists(l1, l2)
+
+# Print the merged linked list
+print(""Merged Linked List:"")
+print_linked_list(merged_list)
+```
+
+### Sample Input
+- List 1: [1, 2, 4]
+- List 2: [1, 3, 4]
+
+### Expected Output
+The script will print the merged linked list in sorted order:
+```
+Merged Linked List:
+1 -> 1 -> 2 -> 3 -> 4 -> 4
+```
+
+This script demonstrates the merging of two sorted linked lists into a single sorted linked list using a recursive approach. The utility functions help in creating and displaying the linked lists for easy testing and verification.",mergeTwoLists.py,9
+11,"def strStr(haystack, needle):
+    for i in range(len(haystack) - len(needle) + 1):
+        if haystack[i:i+len(needle)] == needle:
+            return i
+    return -1
+haystack = ""hello""
+needle = ""ll""
+result = strStr(haystack, needle)
+print(""The index of the first occurrence of '{}' in '{}' is: {}"".format(needle, haystack, result))
+","The provided Python script defines a function `strStr` that searches for the first occurrence of a substring (`needle`) within a larger string (`haystack`). The function iterates over the `haystack` string, checking each possible starting position to see if the substring `needle` matches the corresponding segment of `haystack`. If a match is found, the function returns the starting index of the first occurrence. If no match is found after checking all possible positions, it returns -1. The script then demonstrates the function by searching for the substring ""ll"" within the string ""hello"" and prints the index of the first occurrence, which is 2.","Here's the Python script implementing the described functionality:
+
+```python
+def strStr(haystack, needle):
+    # If needle is an empty string, return 0 as per common convention
+    if not needle:
+        return 0
+    
+    # Get the lengths of haystack and needle
+    len_haystack = len(haystack)
+    len_needle = len(needle)
+    
+    # Iterate over each possible starting position in haystack
+    for i in range(len_haystack - len_needle + 1):
+        # Check if the substring of haystack starting at i matches needle
+        if haystack[i:i+len_needle] == needle:
+            return i
+    
+    # If no match is found, return -1
+    return -1
+
+# Sample input
+haystack = ""hello""
+needle = ""ll""
+
+# Demonstrate the function
+index = strStr(haystack, needle)
+print(f""The index of the first occurrence of '{needle}' in '{haystack}' is: {index}"")
+```
+
+Sample input and output:
+```
+The index of the first occurrence of 'll' in 'hello' is: 2
+```
+
+This script defines the `strStr` function and demonstrates its use by searching for the substring ""ll"" within the string ""hello"", printing the index of the first occurrence.",firstoccurrence.py,12
+14,"import sys
+
+def maxProfit(prices):
+    min_price = sys.maxsize
+    max_profit = 0
+    for price in prices:
+        if price < min_price:
+            min_price = price
+        elif price - min_price > max_profit:
+            max_profit = price - min_price
+    return max_profit
+
+prices = [7, 1, 5, 3, 6, 4]
+profit = maxProfit(prices)
+print(profit)","The provided Python script is designed to calculate the maximum profit that can be achieved from a list of stock prices, where each element in the list represents the stock price on a given day. The core logic of the script involves iterating through the list of prices to determine the lowest price encountered so far (`min_price`) and calculating the potential profit if the stock were sold at the current price. The script keeps track of the highest profit observed (`max_profit`) by comparing the current potential profit with the previously recorded maximum profit. The function `maxProfit` returns this maximum profit value. In the example provided, the list of prices is `[7, 1, 5, 3, 6, 4]`, and the script outputs the maximum profit, which is `5`, achieved by buying at price `1` and selling at price `6`.","Below is the Python script that implements the described functionality to calculate the maximum profit from a list of stock prices:
+
+```python
+def maxProfit(prices):
+    if not prices:
+        return 0
+
+    min_price = float('inf')
+    max_profit = 0
+
+    for price in prices:
+        # Update the minimum price encountered so far
+        if price < min_price:
+            min_price = price
+        # Calculate the potential profit at the current price
+        potential_profit = price - min_price
+        # Update the maximum profit if the current potential profit is higher
+        if potential_profit > max_profit:
+            max_profit = potential_profit
+
+    return max_profit
+
+# Sample input
+prices = [7, 1, 5, 3, 6, 4]
+# Execute the function and print the result
+print(""Maximum Profit:"", maxProfit(prices))
+```
+
+### Sample Input and Execution:
+- **Input:** `[7, 1, 5, 3, 6, 4]`
+- **Output:** `Maximum Profit: 5`
+
+This script iterates through the list of stock prices, updating the minimum price and calculating potential profits to determine the maximum profit achievable. In the sample input, the maximum profit of `5` is achieved by buying at price `1` and selling at price `6`.",maxProfit.py,15
+18,"def coin_change(coins, amount):
+    dp = [float('inf') for _ in range(amount + 1)]
+    dp[0] = 0
+    for coin in coins:
+        for i in range(coin, amount + 1):
+            dp[i] = min(dp[i], dp[i - coin] + 1)
+    return dp[amount] if dp[amount] != float('inf') else -1
+
+if __name__ == ""__main__"":
+    coins = list(map(int, input(""Enter coin denominations separated by spaces: "").split()))
+    amount = int(input(""Enter the target amount: ""))
+    result = coin_change(coins, amount)
+    if result == -1:
+        print(f""It's not possible to make change for {amount} with the given coins."")
+    else:
+        print(f""The minimum number of coins required to make {amount} is: {result}"")
+","The provided Python script is designed to solve the ""coin change problem,"" which involves finding the minimum number of coins needed to make a given amount using specified coin denominations. The script defines a function `coin_change` that utilizes dynamic programming to compute the solution. It initializes a list `dp` where each index represents the minimum number of coins needed to achieve that amount, starting with zero coins needed for an amount of zero. The function iterates over each coin denomination and updates the `dp` list to reflect the minimum coins required for each amount up to the target. If the target amount can be achieved, the function returns the minimum number of coins; otherwise, it returns -1, indicating it's not possible to make the change with the given coins. The script prompts the user to input coin denominations and a target amount, then outputs the result based on the function's computation.","Below is a Python script that implements the described functionality for solving the coin change problem using dynamic programming. The script includes a function `coin_change` and prompts the user for input to demonstrate its execution.
+
+```python
+def coin_change(coins, amount):
+    # Initialize the dp array with a value greater than the maximum possible coins needed
+    dp = [float('inf')] * (amount + 1)
+    # Base case: zero coins are needed to make the amount zero
+    dp[0] = 0
+
+    # Iterate over each coin denomination
+    for coin in coins:
+        # Update the dp array for each amount from the coin value to the target amount
+        for x in range(coin, amount + 1):
+            dp[x] = min(dp[x], dp[x - coin] + 1)
+
+    # If dp[amount] is still float('inf'), it means the amount cannot be made with the given coins
+    return dp[amount] if dp[amount] != float('inf') else -1
+
+def main():
+    # Prompt the user for input
+    coin_input = input(""Enter the coin denominations separated by spaces: "")
+    coins = list(map(int, coin_input.split()))
+    amount = int(input(""Enter the target amount: ""))
+
+    # Calculate the minimum number of coins needed
+    result = coin_change(coins, amount)
+
+    # Output the result
+    if result != -1:
+        print(f""The minimum number of coins needed: {result}"")
+    else:
+        print(""It's not possible to make the change with the given coins."")
+
+# Run the main function
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input and Execution
+
+To demonstrate the script's execution, consider the following sample input:
+
+```
+Enter the coin denominations separated by spaces: 1 2 5
+Enter the target amount: 11
+```
+
+### Expected Output
+
+```
+The minimum number of coins needed: 3
+```
+
+In this example, the minimum number of coins needed to make the amount 11 using the denominations 1, 2, and 5 is 3 (5 + 5 + 1).",coinChange.py,18
+21,"def removeDuplicates(nums):
+    slow, fast = 0, 1
+    while fast in range(len(nums)):
+        if nums[slow] == nums[fast]:
+            fast += 1
+        else:
+            nums[slow+1] = nums[fast]
+            fast += 1
+            slow += 1
+
+    return slow + 1
+nums = [1, 1, 2, 3, 3, 4]
+new_length = removeDuplicates(nums)
+print(""New Length:"", new_length)
+print(""Modified List (unique elements):"", nums[:new_length])","The provided Python script defines a function `removeDuplicates` that removes duplicate elements from a sorted list `nums` in-place, ensuring that each element appears only once. The function uses two pointers, `slow` and `fast`, to traverse the list. The `slow` pointer tracks the position of the last unique element, while the `fast` pointer scans through the list. When a new unique element is found (i.e., `nums[slow]` is not equal to `nums[fast]`), it is placed at the position `slow + 1`, and both pointers are incremented. The function returns the new length of the list containing only unique elements. After calling the function with a sample list, the script prints the new length and the modified list up to that length, demonstrating the removal of duplicates.","Here's a Python script that implements the described functionality of removing duplicates from a sorted list using two pointers:
+
+```python
+def removeDuplicates(nums):
+    if not nums:
+        return 0
+
+    # Initialize the slow pointer
+    slow = 0
+
+    # Traverse the list with the fast pointer
+    for fast in range(1, len(nums)):
+        # If a new unique element is found
+        if nums[slow] != nums[fast]:
+            # Move the slow pointer and update the element
+            slow += 1
+            nums[slow] = nums[fast]
+
+    # The new length is slow + 1
+    return slow + 1
+
+# Sample input
+nums = [1, 1, 2, 2, 3, 4, 4, 5]
+
+# Call the function and get the new length
+new_length = removeDuplicates(nums)
+
+# Print the results
+print(""New length:"", new_length)
+print(""Modified list:"", nums[:new_length])
+```
+
+### Sample Input and Output
+Given the sample input list `nums = [1, 1, 2, 2, 3, 4, 4, 5]`, the script will output:
+
+```
+New length: 5
+Modified list: [1, 2, 3, 4, 5]
+```
+
+This demonstrates that the duplicates have been removed, and the list now contains only unique elements up to the new length.",removeduplicates.py,21
+24,"def countSort(arr):
+    output = [0 for _ in range(len(arr))]
+    count = [0 for _ in range(256)]
+    ans = ["""" for _ in arr]
+    for i in arr:
+        count[ord(i)] += 1
+    for i in range(1, 256):
+        count[i] += count[i - 1]
+    for i in range(len(arr)):
+        output[count[ord(arr[i])] - 1] = arr[i]
+        count[ord(arr[i])] -= 1
+    for i in range(len(arr)):
+        ans[i] = output[i]
+    return ans
+
+
+if __name__ == '__main__':
+    arr = input(""Enter a string to sort: "")
+    ans = countSort(arr)
+    print(""Sorted character array is:"", """".join(ans))
+","The provided Python script implements a counting sort algorithm specifically designed to sort characters in a string. The script begins by initializing three lists: `output` to store the sorted characters, `count` to keep track of the frequency of each character (assuming ASCII character set with 256 possible characters), and `ans` to hold the final sorted result. The core logic involves three main steps: first, it counts the occurrences of each character in the input string using their ASCII values as indices in the `count` list. Next, it modifies the `count` list to store cumulative counts, which helps in determining the correct positions of characters in the sorted order. Finally, it constructs the `output` list by placing each character at its correct position based on the cumulative counts, and then decrements the count to handle duplicate characters. The sorted characters are then stored in the `ans` list, which is returned and printed as a sorted string. The script prompts the user to input a string and outputs the sorted version of that string.","Below is a Python script that implements the described counting sort algorithm to sort characters in a string. The script prompts the user for input and outputs the sorted version of the string.
+
+```python
+def counting_sort(input_str):
+    # Initialize the count array with 256 zeros for ASCII characters
+    count = [0] * 256
+    # Initialize the output array to store the sorted characters
+    output = [''] * len(input_str)
+    
+    # Step 1: Count the occurrences of each character
+    for char in input_str:
+        count[ord(char)] += 1
+    
+    # Step 2: Modify the count array to store cumulative counts
+    for i in range(1, 256):
+        count[i] += count[i - 1]
+    
+    # Step 3: Build the output character array
+    for char in reversed(input_str):
+        output[count[ord(char)] - 1] = char
+        count[ord(char)] -= 1
+    
+    # Convert the output list to a string
+    ans = ''.join(output)
+    return ans
+
+# Prompt the user for input
+input_string = input(""Enter a string to sort: "")
+
+# Get the sorted string using counting sort
+sorted_string = counting_sort(input_string)
+
+# Print the sorted string
+print(""Sorted string:"", sorted_string)
+```
+
+### Sample Input and Execution:
+
+```
+Enter a string to sort: hello world
+Sorted string:  dehllloorw
+```
+
+This script will sort the characters of the input string using the counting sort algorithm, which is efficient for sorting characters due to its linear time complexity relative to the size of the character set.",countShort.py,24
+27,"def dutch_national_flag_problem(arr):
+    low = 0
+    mid = 0
+    high = len(arr) - 1
+    while mid <= high:
+        if arr[mid] == 0:
+            arr[mid], arr[low] = arr[low], arr[mid]
+            low += 1
+            mid += 1
+        elif arr[mid] == 1:
+            mid += 1
+        else:
+            arr[mid], arr[high] = arr[high], arr[mid]
+            high -= 1
+
+    return arr
+
+if __name__ == ""__main__"":
+    arr = list(map(int, input(""Enter an array of 0s, 1s, and 2s (space-separated): "").split()))
+
+    if not all(x in [0, 1, 2] for x in arr):
+        print(""Error: Please enter an array containing only 0s, 1s, and 2s."")
+    else:
+        result = dutch_national_flag_problem(arr)
+        print(""Sorted Array:"", result)
+","The provided Python script implements the Dutch National Flag problem, which is a sorting algorithm designed to sort an array containing only the integers 0, 1, and 2. The script defines a function `dutch_national_flag_problem` that takes an array as input and rearranges its elements so that all 0s are at the beginning, followed by all 1s, and all 2s at the end. This is achieved using three pointers: `low`, `mid`, and `high`. The `mid` pointer traverses the array, swapping elements to ensure that 0s are moved to the front and 2s to the back, while 1s remain in the middle. The script also includes a main block that prompts the user to input an array of 0s, 1s, and 2s, checks for valid input, and then applies the sorting function to display the sorted array. The purpose of the script is to efficiently sort a specific type of array using a linear time complexity algorithm.","Below is a Python script that implements the Dutch National Flag problem as described. The script includes a function `dutch_national_flag_problem` to sort the array and a main block to handle user input and output.
+
+```python
+def dutch_national_flag_problem(arr):
+    low, mid, high = 0, 0, len(arr) - 1
+
+    while mid <= high:
+        if arr[mid] == 0:
+            arr[low], arr[mid] = arr[mid], arr[low]
+            low += 1
+            mid += 1
+        elif arr[mid] == 1:
+            mid += 1
+        else:  # arr[mid] == 2
+            arr[mid], arr[high] = arr[high], arr[mid]
+            high -= 1
+
+def main():
+    try:
+        # Prompt the user to input an array of 0s, 1s, and 2s
+        user_input = input(""Enter an array of 0s, 1s, and 2s separated by spaces: "")
+        arr = list(map(int, user_input.split()))
+
+        # Check if the input array contains only 0s, 1s, and 2s
+        if not all(x in [0, 1, 2] for x in arr):
+            raise ValueError(""Array must contain only 0s, 1s, and 2s."")
+
+        # Sort the array using the Dutch National Flag algorithm
+        dutch_national_flag_problem(arr)
+
+        # Display the sorted array
+        print(""Sorted array:"", arr)
+
+    except ValueError as e:
+        print(""Invalid input:"", e)
+
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input and Execution
+
+To demonstrate the script's execution, you can run the script and provide the following input when prompted:
+
+```
+Enter an array of 0s, 1s, and 2s separated by spaces: 2 0 1 2 1 0 0 2 1
+```
+
+The output will be:
+
+```
+Sorted array: [0, 0, 0, 1, 1, 1, 2, 2, 2]
+```
+
+This script efficiently sorts the array using a linear time complexity algorithm, ensuring that all 0s are at the beginning, followed by 1s, and all 2s at the end.",dutch_national_flag_problem.py,27
+30,"s = input(""Enter a string: "")
+unique = ''
+for c in s:
+    if c not in unique:
+        unique += c
+print(""Number of unique characters:"", len(unique))","This Python script prompts the user to input a string and then calculates the number of unique characters present in that string. The script initializes an empty string `unique` to store characters that have not been encountered before. It iterates over each character `c` in the input string `s`, checking if `c` is not already in `unique`. If `c` is not present, it appends `c` to `unique`. After processing all characters, the script prints the count of unique characters by outputting the length of the `unique` string. This approach effectively filters out duplicate characters, ensuring each character is counted only once.","Here is a Python script that implements the described functionality:
+
+```python
+def count_unique_characters():
+    # Prompt the user to input a string
+    s = input(""Enter a string: "")
+    
+    # Initialize an empty string to store unique characters
+    unique = """"
+    
+    # Iterate over each character in the input string
+    for c in s:
+        # Check if the character is not already in the unique string
+        if c not in unique:
+            # Append the character to the unique string
+            unique += c
+    
+    # Print the count of unique characters
+    print(""Number of unique characters:"", len(unique))
+
+# Call the function to execute the script
+count_unique_characters()
+```
+
+### Sample Input and Execution:
+
+```
+Enter a string: hello world
+Number of unique characters: 8
+```
+
+In this example, the input string ""hello world"" contains the unique characters 'h', 'e', 'l', 'o', ' ', 'w', 'r', 'd', resulting in a count of 8 unique characters.",countUniqueChars.py,30

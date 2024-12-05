@@ -1,0 +1,869 @@
+runid,initial_program,explanation,generated_program,filename,row_num
+1,"import numpy as np
+
+class Layer:
+    def __init__(self, input_size, output_size):
+        self.weights = np.random.randn(output_size, input_size) * 0.01
+        self.bias = np.zeros((output_size, 1))
+        self.output = None
+        self.grad_weights = None
+        self.grad_bias = None
+
+class Activation:
+    def __init__(self, function, gradient):
+        self.function = function
+        self.gradient = gradient
+
+    @staticmethod
+    def relu(x):
+        return np.maximum(0, x)
+
+    @staticmethod
+    def relu_gradient(x):
+        return np.where(x > 0, 1, 0)
+
+    @staticmethod
+    def sigmoid(x):
+        return 1 / (1 + np.exp(-x))
+
+    @staticmethod
+    def sigmoid_gradient(x):
+        sig = Activation.sigmoid(x)
+        return sig * (1 - sig)
+
+class Loss:
+    @staticmethod
+    def mse(predictions, labels):
+        return np.mean(np.square(predictions - labels))
+
+    @staticmethod
+    def mse_gradient(predictions, labels):
+        return 2 * (predictions - labels) / labels.size
+
+class Optimizer:
+    def __init__(self, learning_rate):
+        self.learning_rate = learning_rate
+        self.layer_number = None
+
+    def update_weights(self, layer, grad_weights):
+        layer.weights -= self.learning_rate * grad_weights
+
+    def update_bias(self, layer, grad_bias):
+        layer.bias -= self.learning_rate * grad_bias
+
+class NeuralNetwork:
+    def __init__(self, layers, regularization_factor=0.01):
+        self._layers = layers
+        self._num_layers = len(layers)
+        self._regularization_factor = regularization_factor
+        self._optimizer = Optimizer(learning_rate=0.01)
+        self._loss = Loss()
+        self._num_examples = None
+        self._input = None
+        self._output = None
+
+    def forward_step(self, inputs):
+        self._input = inputs
+        for layer, activation in self._layers:
+            z = np.dot(layer.weights, inputs) + layer.bias
+            layer.output = activation.function(z)
+            inputs = layer.output
+        self._output = inputs
+
+    def backward_step(self, labels):
+        da = self._loss.mse_gradient(self._output, labels)
+
+        for index in reversed(range(self._num_layers)):
+            layer, activation = self._layers[index]
+
+            if index == 0:
+                prev_layer_output = self._input
+            else:
+                prev_layer, prev_activation = self._layers[index - 1]
+                prev_layer_output = prev_activation.function(prev_layer.output)
+
+            dz = np.multiply(da, activation.gradient(layer.output))
+            layer.grad_weights = np.dot(dz, prev_layer_output.T) / self._num_examples
+            layer.grad_weights += (self._regularization_factor / self._num_examples) * layer.weights
+            layer.grad_bias = np.mean(dz, axis=1, keepdims=True)
+            da = np.dot(layer.grad_weights.T, dz)
+
+            self._optimizer.update_weights(layer, layer.grad_weights)
+            self._optimizer.update_bias(layer, layer.grad_bias)
+
+    def train(self, inputs, labels, epochs):
+        self._num_examples = inputs.shape[1]
+        for epoch in range(epochs):
+            self.forward_step(inputs)
+            self.backward_step(labels)
+            loss = self._loss.mse(self._output, labels)
+            print(f""Epoch {epoch + 1}/{epochs}, Loss: {loss}"")
+
+if __name__ == ""__main__"":
+    np.random.seed(42)
+
+    layers = [
+        (Layer(2, 3), Activation(Activation.relu, Activation.relu_gradient)),
+        (Layer(3, 1), Activation(Activation.sigmoid, Activation.sigmoid_gradient))
+    ]
+    nn = NeuralNetwork(layers)
+
+    inputs = np.random.rand(2, 10)
+    labels = np.random.rand(1, 10)
+
+    nn.train(inputs, labels, epochs=10)
+","This Python script implements a simple feedforward neural network with backpropagation for training. It defines several classes: `Layer` for representing a neural network layer with weights and biases, `Activation` for activation functions and their gradients (ReLU and Sigmoid), `Loss` for calculating mean squared error and its gradient, and `Optimizer` for updating weights and biases using gradient descent. The `NeuralNetwork` class orchestrates the forward and backward propagation steps. During the forward step, it computes the output of each layer using the specified activation functions. In the backward step, it calculates gradients for weights and biases using the chain rule and updates them to minimize the loss. The network is trained over a specified number of epochs, printing the loss at each epoch. The script initializes a neural network with two layers and trains it on random input and label data for demonstration purposes.","Below is a Python script implementing the described functionality of a simple feedforward neural network with backpropagation. The script includes classes for layers, activation functions, loss calculation, and optimization. It initializes a neural network with two layers and trains it on random input and label data.
+
+```python
+import numpy as np
+
+class Layer:
+    def __init__(self, input_size, output_size):
+        self.weights = np.random.randn(input_size, output_size) * 0.1
+        self.biases = np.zeros((1, output_size))
+        self.input = None
+        self.output = None
+
+    def forward(self, input_data):
+        self.input = input_data
+        self.output = np.dot(input_data, self.weights) + self.biases
+        return self.output
+
+    def backward(self, output_gradient, learning_rate):
+        weights_gradient = np.dot(self.input.T, output_gradient)
+        input_gradient = np.dot(output_gradient, self.weights.T)
+        self.weights -= learning_rate * weights_gradient
+        self.biases -= learning_rate * np.sum(output_gradient, axis=0, keepdims=True)
+        return input_gradient
+
+class Activation:
+    @staticmethod
+    def relu(x):
+        return np.maximum(0, x)
+
+    @staticmethod
+    def relu_derivative(x):
+        return (x > 0).astype(float)
+
+    @staticmethod
+    def sigmoid(x):
+        return 1 / (1 + np.exp(-x))
+
+    @staticmethod
+    def sigmoid_derivative(x):
+        sig = Activation.sigmoid(x)
+        return sig * (1 - sig)
+
+class Loss:
+    @staticmethod
+    def mean_squared_error(y_true, y_pred):
+        return np.mean((y_true - y_pred) ** 2)
+
+    @staticmethod
+    def mean_squared_error_derivative(y_true, y_pred):
+        return 2 * (y_pred - y_true) / y_true.size
+
+class Optimizer:
+    def __init__(self, learning_rate=0.01):
+        self.learning_rate = learning_rate
+
+class NeuralNetwork:
+    def __init__(self):
+        self.layers = []
+        self.activations = []
+
+    def add_layer(self, layer, activation):
+        self.layers.append(layer)
+        self.activations.append(activation)
+
+    def forward(self, X):
+        for i, layer in enumerate(self.layers):
+            X = layer.forward(X)
+            if self.activations[i] == 'relu':
+                X = Activation.relu(X)
+            elif self.activations[i] == 'sigmoid':
+                X = Activation.sigmoid(X)
+        return X
+
+    def backward(self, X, y, learning_rate):
+        output = self.forward(X)
+        loss_gradient = Loss.mean_squared_error_derivative(y, output)
+        for i in reversed(range(len(self.layers))):
+            if self.activations[i] == 'relu':
+                loss_gradient *= Activation.relu_derivative(self.layers[i].output)
+            elif self.activations[i] == 'sigmoid':
+                loss_gradient *= Activation.sigmoid_derivative(self.layers[i].output)
+            loss_gradient = self.layers[i].backward(loss_gradient, learning_rate)
+
+    def train(self, X, y, epochs, learning_rate):
+        for epoch in range(epochs):
+            self.backward(X, y, learning_rate)
+            loss = Loss.mean_squared_error(y, self.forward(X))
+            print(f'Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}')
+
+# Sample input to demonstrate the script's execution
+if __name__ == ""__main__"":
+    # Initialize the neural network
+    nn = NeuralNetwork()
+    nn.add_layer(Layer(2, 3), 'relu')
+    nn.add_layer(Layer(3, 1), 'sigmoid')
+
+    # Random input and label data
+    X = np.random.rand(5, 2)
+    y = np.random.rand(5, 1)
+
+    # Train the network
+    nn.train(X, y, epochs=10, learning_rate=0.01)
+```
+
+This script creates a simple neural network with two layers and trains it using random data. The network uses ReLU and Sigmoid activation functions and is trained using mean squared error loss. The training process prints the loss at each epoch.",neuralNetwork1.py,1
+4,"def isPalindrome(x):
+        if x < 0:
+            return False
+
+        reversed_num = 0
+        temp = x
+
+        while temp != 0:
+            digit = temp % 10
+            reversed_num = reversed_num * 10 + digit
+            temp //= 10
+
+        print(reversed_num == x)
+
+isPalindrome(1001)
+","The provided Python script defines a function `isPalindrome(x)` that checks whether a given integer `x` is a palindrome. A palindrome is a number that reads the same backward as forward. The function first checks if `x` is negative, returning `False` immediately since negative numbers cannot be palindromes. It then initializes `reversed_num` to zero and uses a while loop to reverse the digits of `x`. Inside the loop, it extracts the last digit of `temp` (a copy of `x`), appends it to `reversed_num`, and removes the last digit from `temp` by performing integer division by 10. After the loop, it compares `reversed_num` with the original number `x` and prints `True` if they are equal (indicating `x` is a palindrome) or `False` otherwise. The function is called with the argument `1001`, and it prints `True` since `1001` is a palindrome.","Below is the Python script implementing the described functionality:
+
+```python
+def isPalindrome(x):
+    # Check if the number is negative
+    if x < 0:
+        return False
+    
+    # Initialize variables
+    original_num = x
+    reversed_num = 0
+    
+    # Reverse the digits of the number
+    while x > 0:
+        last_digit = x % 10
+        reversed_num = reversed_num * 10 + last_digit
+        x = x // 10
+    
+    # Check if the original number is equal to the reversed number
+    return original_num == reversed_num
+
+# Test the function with the sample input
+result = isPalindrome(1001)
+print(result)  # Output: True
+```
+
+### Sample Input and Execution
+To demonstrate the script's execution, you can run the script as is. The function `isPalindrome` is called with the argument `1001`, and it will print `True` since `1001` is indeed a palindrome.",palindrome.py,4
+7,"def twoSum(nums, target):
+        numMap = {}
+        n = len(nums)
+        for i in range(n):
+            numMap[nums[i]] = i
+        for i in range(n):
+            complement = target - nums[i]
+            if complement in numMap and numMap[complement] != i:
+                print([i, numMap[complement]])
+
+        return []
+
+twoSum([2, 7, 11, 15], 9)","The given Python script defines a function `twoSum` that aims to find two distinct indices in a list of numbers (`nums`) such that the numbers at these indices add up to a specified target value (`target`). The function uses a dictionary (`numMap`) to map each number in the list to its index, allowing for efficient lookup. It first populates this dictionary by iterating over the list. Then, it iterates over the list again to find a pair of indices where the sum of the numbers at these indices equals the target. For each number, it calculates the complement needed to reach the target and checks if this complement exists in the dictionary and is not the same index as the current number. If such a pair is found, it prints the indices. The function returns an empty list, although the return value is not utilized in this script. The example call `twoSum([2, 7, 11, 15], 9)` demonstrates finding indices `[0, 1]` since `nums[0] + nums[1]` equals 9.","Below is a Python script implementing the described functionality of the `twoSum` function. The script includes a sample input to demonstrate its execution.
+
+```python
+def twoSum(nums, target):
+    # Dictionary to store the number and its index
+    numMap = {}
+    
+    # Populate the dictionary with numbers and their indices
+    for i, num in enumerate(nums):
+        numMap[num] = i
+    
+    # Iterate over the list to find the two indices
+    for i, num in enumerate(nums):
+        # Calculate the complement needed to reach the target
+        complement = target - num
+        
+        # Check if the complement exists in the dictionary and is not the same index
+        if complement in numMap and numMap[complement] != i:
+            # Print the indices
+            print(f""Indices found: [{i}, {numMap[complement]}]"")
+            return [i, numMap[complement]]
+    
+    # Return an empty list if no pair is found
+    return []
+
+# Sample input to demonstrate the script's execution
+sample_nums = [2, 7, 11, 15]
+sample_target = 9
+
+# Call the function with the sample input
+twoSum(sample_nums, sample_target)
+```
+
+### Sample Input and Output
+- **Input:** `twoSum([2, 7, 11, 15], 9)`
+- **Output:** `Indices found: [0, 1]`
+
+This script will print the indices `[0, 1]` because the numbers at these indices (`2` and `7`) add up to the target value `9`.",twosum_hashtable.py,7
+9,"def climb_stairs(n):
+    if n < 3:
+        return n
+    cache = [0] * n
+    cache[0], cache[1] = 1, 2
+    for i in range(2, n):
+        cache[i] = cache[i - 1] + cache[i - 2]
+    return cache[n - 1]
+
+def climb_stairs_variation(n):
+    if n < 3:
+        return n
+    cache = [0] * n
+    cache[0], cache[1], cache[2] = 1, 2, 4
+    for i in range(3, n):
+        cache[i] = cache[i - 1] + cache[i - 2] + cache[i - 3]
+    return cache[n - 1]
+
+if __name__ == ""__main__"":
+    n = int(input(""Enter the number of steps: ""))
+    print(""Choose the type of problem:"")
+    print(""1. Climb stairs with 1 or 2 steps at a time"")
+    print(""2. Climb stairs with 1, 2, or 3 steps at a time"")
+    choice = int(input(""Enter your choice (1 or 2): ""))
+    if choice == 1:
+        print(f""Number of distinct ways to climb {n} steps (1 or 2 at a time): {climb_stairs(n)}"")
+    elif choice == 2:
+        print(f""Number of distinct ways to climb {n} steps (1, 2, or 3 at a time): {climb_stairs_variation(n)}"")
+    else:
+        print(""Invalid choice. Please enter 1 or 2."")
+","The provided Python script calculates the number of distinct ways to climb a staircase with a given number of steps, `n`, using two different step-taking strategies. The `climb_stairs` function computes the number of ways to climb the stairs if one can take either 1 or 2 steps at a time, using dynamic programming to store intermediate results in a cache array. Similarly, the `climb_stairs_variation` function extends this logic to allow taking 1, 2, or 3 steps at a time, also utilizing a cache for efficiency. The script prompts the user to input the number of steps and choose between the two climbing strategies. It then outputs the number of distinct ways to climb the stairs based on the user's choice. The core logic involves iteratively building up the solution using previously computed values, akin to solving the Fibonacci sequence for the first function and a generalized version for the second.","Here's a Python script that implements the described functionality:
+
+```python
+def climb_stairs(n):
+    if n <= 1:
+        return 1
+    cache = [0] * (n + 1)
+    cache[0], cache[1] = 1, 1
+    for i in range(2, n + 1):
+        cache[i] = cache[i - 1] + cache[i - 2]
+    return cache[n]
+
+def climb_stairs_variation(n):
+    if n <= 1:
+        return 1
+    elif n == 2:
+        return 2
+    cache = [0] * (n + 1)
+    cache[0], cache[1], cache[2] = 1, 1, 2
+    for i in range(3, n + 1):
+        cache[i] = cache[i - 1] + cache[i - 2] + cache[i - 3]
+    return cache[n]
+
+def main():
+    n = int(input(""Enter the number of steps: ""))
+    print(""Choose a climbing strategy:"")
+    print(""1. Take 1 or 2 steps at a time"")
+    print(""2. Take 1, 2, or 3 steps at a time"")
+    choice = int(input(""Enter your choice (1 or 2): ""))
+
+    if choice == 1:
+        result = climb_stairs(n)
+    elif choice == 2:
+        result = climb_stairs_variation(n)
+    else:
+        print(""Invalid choice"")
+        return
+
+    print(f""The number of distinct ways to climb {n} steps is: {result}"")
+
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input and Execution:
+
+```
+Enter the number of steps: 5
+Choose a climbing strategy:
+1. Take 1 or 2 steps at a time
+2. Take 1, 2, or 3 steps at a time
+Enter your choice (1 or 2): 1
+The number of distinct ways to climb 5 steps is: 8
+```
+
+In this example, the user chooses to climb 5 steps using the strategy of taking 1 or 2 steps at a time. The script calculates and outputs that there are 8 distinct ways to climb the staircase using this strategy.",climbStairs.py,10
+12,"def isValid(s):
+        stack = []
+        for c in s:
+            if c in '([{':
+                stack.append(c)
+            else:
+                if not stack or \
+                    (c == ')' and stack[-1] != '(') or \
+                    (c == '}' and stack[-1] != '{') or \
+                    (c == ']' and stack[-1] != '['):
+                    return False
+                stack.pop()
+        return not stack
+
+print(isValid(""()""))
+print(isValid(""()[]{}""))
+print(isValid(""(]""))
+print(isValid(""([)]""))
+print(isValid(""{[]}""))","The provided Python script defines a function `isValid(s)` that checks whether a given string `s` containing only the characters '(', ')', '{', '}', '[' and ']' is valid. A string is considered valid if the brackets are closed in the correct order and each opening bracket has a corresponding closing bracket of the same type. The function uses a stack data structure to keep track of the opening brackets encountered as it iterates through the string. When a closing bracket is encountered, it checks if it matches the most recent opening bracket on the stack. If it does, the opening bracket is removed from the stack; otherwise, the function returns `False`, indicating the string is not valid. If the stack is empty after processing the entire string, the function returns `True`, indicating the string is valid. The script then tests this function with several examples, printing the results to demonstrate its functionality.","Below is a Python script that implements the described functionality using a stack to validate a string of brackets. The script includes a function `isValid(s)` and tests it with several examples.
+
+```python
+def isValid(s: str) -> bool:
+    # Dictionary to hold the mapping of closing to opening brackets
+    bracket_map = {')': '(', '}': '{', ']': '['}
+    # Stack to keep track of opening brackets
+    stack = []
+
+    # Iterate through each character in the string
+    for char in s:
+        # If the character is a closing bracket
+        if char in bracket_map:
+            # Pop the topmost element from the stack if it's not empty, otherwise assign a dummy value
+            top_element = stack.pop() if stack else '#'
+            # Check if the popped element matches the corresponding opening bracket
+            if bracket_map[char] != top_element:
+                return False
+        else:
+            # If it's an opening bracket, push it onto the stack
+            stack.append(char)
+
+    # If the stack is empty, all opening brackets have been matched
+    return not stack
+
+# Test cases
+test_strings = [
+    ""()"",        # True
+    ""()[]{}"",    # True
+    ""(]"",        # False
+    ""([)]"",      # False
+    ""{[]}"",      # True
+    """",          # True (empty string is considered valid)
+    ""((()))"",    # True
+    ""((())"",     # False
+]
+
+# Test the function with the provided test cases
+for test in test_strings:
+    result = isValid(test)
+    print(f""'{test}': {result}"")
+```
+
+### Sample Input and Output
+When you run the script, it will test the `isValid` function with several strings and print whether each string is valid or not:
+
+```
+'()': True
+'()[]{}': True
+'(]': False
+'([)]': False
+'{[]}': True
+'': True
+'((()))': True
+'((())': False
+```
+
+This output demonstrates the functionality of the `isValid` function, showing which strings of brackets are valid according to the rules described.",isValid.py,13
+15,"import random
+hidden = random.randrange(1, 201)
+while True:
+    user_input = input(""Please enter your guess [x]: "")
+    print(user_input)
+
+    if user_input == 'x':
+        print(""Sad to see you leaving early"")
+        exit()
+
+    guess = int(user_input)
+    if guess == hidden:
+        print(""Hit!"")
+        break
+
+    if guess < hidden:
+        print(""Your guess is too low"")
+    else:
+        print(""Your guess is too high"")
+","This Python script is a simple number guessing game where the program randomly selects a hidden number between 1 and 200, and the user attempts to guess it. The user is prompted to input their guess, and the program provides feedback on whether the guess is too low, too high, or correct. If the user guesses the number correctly, the program outputs ""Hit!"" and terminates the loop. The user can also exit the game prematurely by entering 'x', which results in a farewell message and the program's termination. The core logic involves a loop that continuously prompts for user input, checks the input against the hidden number, and provides appropriate feedback until the correct number is guessed or the user decides to exit.","Below is a Python script that implements the described number guessing game:
+
+```python
+import random
+
+def number_guessing_game():
+    hidden_number = random.randint(1, 200)
+    print(""Welcome to the Number Guessing Game!"")
+    print(""Try to guess the number between 1 and 200."")
+    print(""Enter 'x' to exit the game at any time."")
+
+    while True:
+        user_input = input(""Enter your guess: "")
+
+        if user_input.lower() == 'x':
+            print(""Thank you for playing! Goodbye!"")
+            break
+
+        try:
+            guess = int(user_input)
+        except ValueError:
+            print(""Invalid input. Please enter a number between 1 and 200, or 'x' to exit."")
+            continue
+
+        if guess < 1 or guess > 200:
+            print(""Please guess a number within the range 1 to 200."")
+        elif guess < hidden_number:
+            print(""Too low! Try again."")
+        elif guess > hidden_number:
+            print(""Too high! Try again."")
+        else:
+            print(""Hit! You've guessed the correct number!"")
+            break
+
+# Run the game
+number_guessing_game()
+```
+
+### Sample Input and Execution:
+
+1. The program starts and prompts the user to guess a number between 1 and 200.
+2. The user enters a guess, for example, `50`.
+3. The program responds with ""Too low!"" if the hidden number is higher than 50.
+4. The user continues guessing, for example, `150`.
+5. The program responds with ""Too high!"" if the hidden number is lower than 150.
+6. The user eventually guesses the correct number, for example, `123`.
+7. The program outputs ""Hit! You've guessed the correct number!"" and exits the loop.
+8. If at any point the user enters `x`, the program outputs ""Thank you for playing! Goodbye!"" and terminates.",numberGuessing.py,16
+19,"celestial_objects = input(""Enter celestial objects separated by commas: "").split(',')
+celestial_objects = [obj.strip() for obj in celestial_objects]
+names = []
+counter = []
+for name in celestial_objects:
+    if name in names:
+        idx = names.index(name)
+        counter[idx] += 1
+    else:
+        names.append(name)
+        counter.append(1)
+print(""\nCounts of celestial objects:"")
+for i in range(len(names)):
+    print(""{:12} {}"".format(names[i], counter[i]))
+","This Python script is designed to count the occurrences of celestial objects entered by the user. The user is prompted to input a list of celestial objects, separated by commas. The script then processes this input by splitting the string into individual object names and removing any leading or trailing whitespace from each name. It maintains two lists: one for storing unique celestial object names (`names`) and another for counting how many times each object appears (`counter`). As it iterates through the list of celestial objects, it checks if each object is already in the `names` list. If it is, the corresponding count in the `counter` list is incremented. If not, the object is added to the `names` list, and its count is initialized to one in the `counter` list. Finally, the script prints out each unique celestial object along with its count, formatted in a tabular style. This script effectively provides a simple frequency count of celestial objects based on user input.","Below is a Python script that implements the described functionality. The script prompts the user to input a list of celestial objects, processes the input to count the occurrences of each object, and then prints the results in a tabular format.
+
+```python
+def count_celestial_objects():
+    # Prompt the user for input
+    user_input = input(""Enter a list of celestial objects, separated by commas: "")
+
+    # Split the input string into a list of celestial objects and strip whitespace
+    celestial_objects = [obj.strip() for obj in user_input.split(',')]
+
+    # Initialize lists to store unique names and their counts
+    names = []
+    counter = []
+
+    # Iterate through the list of celestial objects
+    for obj in celestial_objects:
+        if obj in names:
+            # If the object is already in the names list, increment its count
+            index = names.index(obj)
+            counter[index] += 1
+        else:
+            # If the object is not in the names list, add it and initialize its count
+            names.append(obj)
+            counter.append(1)
+
+    # Print the results in a tabular format
+    print(""\nCelestial Object\tCount"")
+    print(""-"" * 30)
+    for i in range(len(names)):
+        print(f""{names[i]}\t\t{counter[i]}"")
+
+# Sample input demonstration
+# Uncomment the line below to test the script with a sample input
+# count_celestial_objects()
+```
+
+### Sample Input and Execution
+
+To demonstrate the script's execution, you can run the function `count_celestial_objects()` and input the following when prompted:
+
+```
+Enter a list of celestial objects, separated by commas: Sun, Moon, Star, Sun, Comet, Star, Moon, Sun
+```
+
+The output will be:
+
+```
+Celestial Object	Count
+------------------------------
+Sun		3
+Moon		2
+Star		2
+Comet		1
+```
+
+This output shows the count of each unique celestial object entered by the user.",countWords.py,19
+22,"from typing import List
+
+class Solution:
+    def __init__(self):
+        self.start_index = -1
+        self.end_index = -1
+
+    def binarySearchFirst(self, arr, low, high, target):
+        if low > high:
+            return
+        mid = (low + high) // 2
+        if arr[mid] > target:
+            self.binarySearchFirst(arr, low, mid - 1, target)
+        elif arr[mid] < target:
+            self.binarySearchFirst(arr, mid + 1, high, target)
+        else:
+            self.start_index = mid
+            self.binarySearchFirst(arr, low, mid - 1, target)
+
+    def binarySearchLast(self, arr, low, high, target):
+        if low > high:
+            return
+        mid = (low + high) // 2
+        if arr[mid] > target:
+            self.binarySearchLast(arr, low, mid - 1, target)
+        elif arr[mid] < target:
+            self.binarySearchLast(arr, mid + 1, high, target)
+        else:
+            self.end_index = mid
+            self.binarySearchLast(arr, mid + 1, high, target)
+
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        self.binarySearchLast(nums, 0, len(nums) - 1, target)
+        self.binarySearchFirst(nums, 0, len(nums) - 1, target)
+        return [self.start_index, self.end_index]
+
+
+if __name__ == ""__main__"":
+    nums = list(map(int, input(""Enter the sorted array (space-separated): "").split()))
+    target = int(input(""Enter the target value: ""))
+
+    solution = Solution()
+    result = solution.searchRange(nums, target)
+
+    print(f""Start and End Indices of {target}: {result}"")
+","The provided Python script defines a class `Solution` that includes methods to find the first and last occurrence of a target value in a sorted list using binary search. The class initializes with two attributes, `start_index` and `end_index`, both set to -1, which will store the indices of the first and last occurrences of the target, respectively. The `binarySearchFirst` method recursively searches for the first occurrence of the target by adjusting the search range to the left half when the target is found, while the `binarySearchLast` method does the same for the last occurrence by adjusting to the right half. The `searchRange` method orchestrates these searches and returns a list containing the start and end indices. The script also includes a main block that prompts the user to input a sorted array and a target value, then uses the `Solution` class to find and print the indices of the target's first and last occurrences in the array.","Below is a Python script that implements the described functionality. The script defines a `Solution` class with methods to find the first and last occurrence of a target value in a sorted list using binary search. It also includes a main block to demonstrate the script's execution with user input.
+
+```python
+class Solution:
+    def __init__(self):
+        self.start_index = -1
+        self.end_index = -1
+
+    def binarySearchFirst(self, nums, target, left, right):
+        if left <= right:
+            mid = left + (right - left) // 2
+            if nums[mid] == target:
+                self.start_index = mid
+                # Search in the left half
+                self.binarySearchFirst(nums, target, left, mid - 1)
+            elif nums[mid] < target:
+                self.binarySearchFirst(nums, target, mid + 1, right)
+            else:
+                self.binarySearchFirst(nums, target, left, mid - 1)
+
+    def binarySearchLast(self, nums, target, left, right):
+        if left <= right:
+            mid = left + (right - left) // 2
+            if nums[mid] == target:
+                self.end_index = mid
+                # Search in the right half
+                self.binarySearchLast(nums, target, mid + 1, right)
+            elif nums[mid] < target:
+                self.binarySearchLast(nums, target, mid + 1, right)
+            else:
+                self.binarySearchLast(nums, target, left, mid - 1)
+
+    def searchRange(self, nums, target):
+        self.binarySearchFirst(nums, target, 0, len(nums) - 1)
+        self.binarySearchLast(nums, target, 0, len(nums) - 1)
+        return [self.start_index, self.end_index]
+
+if __name__ == ""__main__"":
+    # Sample input for demonstration
+    nums = [5, 7, 7, 8, 8, 10]
+    target = 8
+    solution = Solution()
+    result = solution.searchRange(nums, target)
+    print(f""The first and last occurrence of {target} in the array is at indices: {result}"")
+```
+
+### Sample Input and Output
+- **Input:** A sorted array `nums = [5, 7, 7, 8, 8, 10]` and a target value `target = 8`.
+- **Output:** The first and last occurrence of `8` in the array is at indices: `[3, 4]`.
+
+This script will find the first and last positions of the target value `8` in the given sorted array and print the indices `[3, 4]`.",binarySearchLast.py,22
+25,"def queue_management(commands):
+    queue = []
+    outputs = []
+
+    for inp in commands:
+        if inp == 'x':
+            outputs.append(""Exiting. Remaining names in the queue:"")
+            outputs.extend(queue)
+            break
+
+        if inp == 's':
+            outputs.append(f""The size of the queue is: {len(queue)}"")
+            continue
+
+        if inp == 'n':
+            if len(queue) > 0:
+                outputs.append(f""Next is: {queue.pop(0)}"")
+            else:
+                outputs.append(""The queue is empty"")
+            continue
+        queue.append(inp)
+        outputs.append(f""Added '{inp}' to the queue"")
+    
+    return outputs
+
+if __name__ == ""__main__"":
+    commands = [""Alice"", ""Bob"", ""s"", ""n"", ""n"", ""s"", ""x""]
+    results = queue_management(commands)
+    for result in results:
+        print(result)","The provided Python script implements a simple queue management system that processes a list of commands to manage a queue of names. The script defines a function `queue_management` that takes a list of commands as input and returns a list of output messages based on the operations performed. The commands include adding a name to the queue, checking the size of the queue ('s'), retrieving and removing the next name from the queue ('n'), and exiting the process ('x'). When 'x' is encountered, the function appends a message indicating the remaining names in the queue and terminates further processing. The script also includes a main block that demonstrates the function with a predefined list of commands, printing the results to the console. The core logic involves iterating over the commands, modifying the queue accordingly, and generating appropriate output messages for each command.","Below is a Python script that implements the described queue management system. The script defines a function `queue_management` to handle the queue operations based on the provided commands. It also includes a main block to demonstrate the function with a sample input.
+
+```python
+def queue_management(commands):
+    queue = []
+    output_messages = []
+
+    for command in commands:
+        if command.startswith('a '):  # Add a name to the queue
+            name = command[2:]
+            queue.append(name)
+            output_messages.append(f""Added {name} to the queue."")
+        elif command == 's':  # Check the size of the queue
+            output_messages.append(f""Queue size: {len(queue)}"")
+        elif command == 'n':  # Retrieve and remove the next name from the queue
+            if queue:
+                next_name = queue.pop(0)
+                output_messages.append(f""Next in queue: {next_name}"")
+            else:
+                output_messages.append(""Queue is empty."")
+        elif command == 'x':  # Exit the process
+            output_messages.append(f""Exiting. Remaining in queue: {', '.join(queue) if queue else 'None'}"")
+            break
+        else:
+            output_messages.append(""Invalid command."")
+
+    return output_messages
+
+if __name__ == ""__main__"":
+    # Sample input commands
+    commands = [
+        'a Alice',
+        'a Bob',
+        's',
+        'n',
+        's',
+        'a Charlie',
+        'n',
+        'n',
+        'x'
+    ]
+
+    # Execute the queue management function and print the results
+    results = queue_management(commands)
+    for message in results:
+        print(message)
+```
+
+### Sample Input
+The sample input commands used in the script are:
+- Add ""Alice"" to the queue
+- Add ""Bob"" to the queue
+- Check the size of the queue
+- Retrieve and remove the next name from the queue
+- Check the size of the queue again
+- Add ""Charlie"" to the queue
+- Retrieve and remove the next name from the queue
+- Retrieve and remove the next name from the queue
+- Exit the process
+
+### Expected Output
+When the script is executed, it will produce the following output:
+```
+Added Alice to the queue.
+Added Bob to the queue.
+Queue size: 2
+Next in queue: Alice
+Queue size: 1
+Added Charlie to the queue.
+Next in queue: Bob
+Next in queue: Charlie
+Exiting. Remaining in queue: None
+```
+
+This output demonstrates the queue management system's functionality, processing each command and providing feedback on the operations performed.",queueManagement.py,25
+28,"def bubbleSort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+
+arr = list(map(int, input(""Enter numbers separated by spaces to sort: "").split()))
+
+bubbleSort(arr)
+
+print(""Sorted array:"", arr)
+","This Python script implements the bubble sort algorithm to sort a list of integers provided by the user. The script begins by prompting the user to input numbers separated by spaces, which are then converted into a list of integers. The `bubbleSort` function is defined to sort this list in ascending order. It does so by repeatedly stepping through the list, comparing adjacent elements, and swapping them if they are in the wrong order. This process is repeated for each element in the list, reducing the number of elements to check with each pass, until the entire list is sorted. Finally, the sorted list is printed to the console. The purpose of this script is to demonstrate a simple sorting algorithm and provide a basic example of user interaction and data manipulation in Python.","Below is a Python script that implements the described functionality using the bubble sort algorithm. The script prompts the user to input a list of integers, sorts the list using bubble sort, and then prints the sorted list.
+
+```python
+def bubbleSort(arr):
+    n = len(arr)
+    # Traverse through all array elements
+    for i in range(n):
+        # Last i elements are already in place
+        for j in range(0, n-i-1):
+            # Traverse the array from 0 to n-i-1
+            # Swap if the element found is greater than the next element
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+
+def main():
+    # Prompt the user to enter numbers separated by spaces
+    user_input = input(""Enter numbers separated by spaces: "")
+    # Convert the input string into a list of integers
+    numbers = list(map(int, user_input.split()))
+    
+    # Sort the list using bubble sort
+    bubbleSort(numbers)
+    
+    # Print the sorted list
+    print(""Sorted list:"", numbers)
+
+# Execute the main function
+if __name__ == ""__main__"":
+    main()
+```
+
+### Sample Input and Execution:
+
+When you run the script, it will prompt you to enter numbers. For example:
+
+```
+Enter numbers separated by spaces: 64 34 25 12 22 11 90
+```
+
+The output will be:
+
+```
+Sorted list: [11, 12, 22, 25, 34, 64, 90]
+```
+
+This demonstrates the bubble sort algorithm sorting the list of integers in ascending order.",bubbleSort.py,28
